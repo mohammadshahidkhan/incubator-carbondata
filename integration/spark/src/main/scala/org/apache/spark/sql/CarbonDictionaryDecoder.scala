@@ -17,6 +17,7 @@
 
 package org.apache.spark.sql
 
+import org.apache.spark.TaskContext
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.errors.attachTree
@@ -169,6 +170,15 @@ case class CarbonDictionaryDecoder(
           val dicts: Seq[Dictionary] = getDictionary(absoluteTableIdentifiers,
             forwardDictionaryCache)
           val dictIndex = dicts.zipWithIndex.filter(x => x._1 != null).map(x => x._2)
+          val tc = TaskContext.get
+          tc.addTaskCompletionListener(context => {
+            dicts.foreach { dictionary =>
+              if (null != dictionary) {
+                dictionary.clear()
+              }
+            }
+          }
+          )
           new Iterator[InternalRow] {
             val unsafeProjection = UnsafeProjection.create(output.map(_.dataType).toArray)
             var flag = true

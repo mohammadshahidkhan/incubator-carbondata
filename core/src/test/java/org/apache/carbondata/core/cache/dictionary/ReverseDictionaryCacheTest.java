@@ -69,7 +69,7 @@ public class ReverseDictionaryCacheTest extends AbstractDictionaryCacheTest {
   private void createDictionaryCacheObject() {
     // enable lru cache by setting cache size
     CarbonProperties.getInstance()
-        .addProperty(CarbonCommonConstants.CARBON_MAX_LEVEL_CACHE_SIZE, "10");
+        .addProperty(CarbonCommonConstants.CARBON_MAX_DRIVER_LRU_CACHE_SIZE, "10");
     CacheProvider cacheProvider = CacheProvider.getInstance();
     reverseDictionaryCache =
         cacheProvider.createCache(CacheType.REVERSE_DICTIONARY, this.carbonStorePath);

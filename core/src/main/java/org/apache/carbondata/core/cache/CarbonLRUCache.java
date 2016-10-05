@@ -70,11 +70,11 @@ public final class CarbonLRUCache {
     }
     initCache();
     if (lruCacheMemorySize > 0) {
-      LOGGER.info("Configured level cahce size is " + lruCacheMemorySize + " MB");
+      LOGGER.info("Configured LRU cache size is " + lruCacheMemorySize + " MB");
       // convert in bytes
       lruCacheMemorySize = lruCacheMemorySize * BYTE_CONVERSION_CONSTANT;
     } else {
-      LOGGER.info("Column cache size not configured. Therefore default behavior will be "
+      LOGGER.info("LRU cache size not configured. Therefore default behavior will be "
               + "considered and no LRU based eviction of columns will be done");
     }
   }
@@ -159,8 +159,10 @@ public final class CarbonLRUCache {
     if (null != cacheable) {
       currentSize = currentSize - cacheable.getMemorySize();
     }
-    lruCacheMap.remove(key);
-    LOGGER.info("Removed level entry from InMemory level lru cache :: " + key);
+    Cacheable remove = lruCacheMap.remove(key);
+    if(null != remove) {
+      LOGGER.info("Removed entry from InMemory lru cache :: " + key);
+    }
   }
 
   /**
@@ -171,6 +173,8 @@ public final class CarbonLRUCache {
    * @param cacheInfo
    */
   public boolean put(String columnIdentifier, Cacheable cacheInfo, long requiredSize) {
+    LOGGER.debug("Required size for entry " + columnIdentifier + " :: " + requiredSize
+        + " Current cache size :: " + currentSize);
     boolean columnKeyAddedSuccessfully = false;
     if (freeMemorySizeForAddingCache(requiredSize)) {
       synchronized (lruCacheMap) {
@@ -180,9 +184,9 @@ public final class CarbonLRUCache {
         }
         columnKeyAddedSuccessfully = true;
       }
-      LOGGER.debug("Added level entry to InMemory level lru cache :: " + columnIdentifier);
+      LOGGER.debug("Added entry to InMemory lru cache :: " + columnIdentifier);
     } else {
-      LOGGER.error("Size not available. Column cannot be added to level lru cache :: "
+      LOGGER.error("Size not available. Entry cannot be added to lru cache :: "
           + columnIdentifier + " .Required Size = " + requiredSize + " Size available "
           + (lruCacheMemorySize - currentSize));
     }

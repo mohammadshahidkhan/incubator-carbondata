@@ -520,4 +520,5 @@ public class QueryModel implements Serializable {
   public void setInvalidSegmentIds(List<String> invalidSegmentIds) {
     this.invalidSegmentIds = invalidSegmentIds;
   }
+
 }

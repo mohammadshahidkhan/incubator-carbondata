@@ -19,6 +19,9 @@ package org.apache.spark.sql
 
 import org.apache.spark.sql.hive.{CarbonMetastoreCatalog, HiveContext}
 
+import org.apache.carbondata.core.constants.CarbonCommonConstants
+import org.apache.carbondata.core.util.CarbonProperties
+
 /**
  * Carbon Environment for unified context
  */
@@ -33,6 +36,7 @@ object CarbonEnv {
       carbonEnv =
         CarbonEnv(sqlContext.asInstanceOf[CarbonContext],
           sqlContext.asInstanceOf[CarbonContext].catalog)
+      CarbonProperties.getInstance.addProperty(CarbonCommonConstants.IS_DRIVER_INSTANCE, "true")
     }
     carbonEnv
   }
